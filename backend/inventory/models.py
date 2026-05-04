@@ -37,6 +37,24 @@ class Product(models.Model):
         
         return min(quantities)
 
+    def produce(self, quantity):
+        if quantity <= 0:
+            raise ValueError("Quantity must be greater than 0")
+        
+        components = self.product_components.all()
+
+        if not components:
+            raise ValueError("Product has no components")
+
+        for pc in components:
+            needed = quantity * pc.quantity
+            if pc.component.stock < needed:
+                raise ValueError(f"Not enough stock for {pc.component.name}" )
+
+        for pc in components:
+            needed = quantity * pc.quantity
+            pc.component.stock -= needed
+            pc.component.save()
     
 
 
