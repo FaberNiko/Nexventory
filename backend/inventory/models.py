@@ -77,7 +77,10 @@ class ProductComponent(models.Model):
 class StockMovement(models.Model):
     component = models.ForeignKey(Component, on_delete=models.CASCADE, related_name='component_movements')
     quantity = models.PositiveIntegerField(validators=[MinValueValidator(1)])
-    type = models.CharField(max_length=50)
+    DELIVERY = 'delivery'
+    PRODUCTION = 'production'
+    created_at = models.DateTimeField(auto_now_add=True)
+    type = models.CharField(choices=[(DELIVERY, 'Delivery'),(PRODUCTION, 'Production')], max_length=50)
 
     def __str__(self):
-        return f"{self.component} | {self.quantity} | {self.type}"
+        return f"{self.component} | {self.quantity} | {self.type} | {self.created_at}"

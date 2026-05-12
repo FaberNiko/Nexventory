@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.db import IntegrityError
 
-from .models import Component, Product, ProductComponent
+from .models import Component, Product, ProductComponent, StockMovement
 
 
 class ProductTest(TestCase):
@@ -41,6 +41,17 @@ class ProductTest(TestCase):
          c2.refresh_from_db()
          self.assertEqual(c1.stock, 7)
          self.assertEqual(c2.stock, 14)
+
+    def test_produce_creates_StockMovement(self):
+         product = Product.objects.create(name="But")
+         c1 = Component.objects.create(name="podeszwa", stock=10)
+         ProductComponent.objects.create(product=product, component=c1, quantity=1)
+         product.produce(3)
+         movement = StockMovement.objects.first()
+
+         self.assertEqual(StockMovement.objects.count(), 1)
+         self.assertEqual(movement.type, 'production')
+         self.assertEqual(movement.quantity, 3)
         
         
 
