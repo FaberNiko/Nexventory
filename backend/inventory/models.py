@@ -55,6 +55,9 @@ class Product(models.Model):
             needed = quantity * pc.quantity
             pc.component.stock -= needed
             pc.component.save()
+            StockMovement.objects.create(component=pc.component, quantity=needed, type='production')
+
+        
     
 
 
@@ -71,3 +74,10 @@ class ProductComponent(models.Model):
         unique_together = ("product", "component")
 
 
+class StockMovement(models.Model):
+    component = models.ForeignKey(Component, on_delete=models.CASCADE, related_name='component_movements')
+    quantity = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+    type = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.component} | {self.quantity} | {self.type}"
