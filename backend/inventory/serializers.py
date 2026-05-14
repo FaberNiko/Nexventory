@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from backend.inventory.models import Product
+from inventory.models import Product
 
 
 class ProductSerializer(serializers.ModelSerializer):
