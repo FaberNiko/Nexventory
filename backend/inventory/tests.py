@@ -42,7 +42,7 @@ class ProductTest(TestCase):
          self.assertEqual(c1.stock, 7)
          self.assertEqual(c2.stock, 14)
 
-    def test_produce_creates_StockMovement(self):
+    def test_produce_creates_stock_movement(self):
          product = Product.objects.create(name="But")
          c1 = Component.objects.create(name="podeszwa", stock=10)
          ProductComponent.objects.create(product=product, component=c1, quantity=1)
