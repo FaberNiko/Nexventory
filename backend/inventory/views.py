@@ -3,8 +3,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from inventory.models import Product, Component
-from inventory.serializers import ProductSerializer, ComponentSerializer
+from inventory.models import Product, Component, StockMovement
+from inventory.serializers import ProductSerializer, ComponentSerializer, StockMovementSerializer
 
 
 @api_view(["GET", "POST"])
@@ -76,3 +76,23 @@ def component_detail(request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 # Create your views here.
+
+@api_view(["POST"])
+def product_produce(request, pk):
+    try:
+        product = Product.objects.get(pk=pk)
+    except Product.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    quantity = request.data["quantity"]
+    try:    
+        product.produce(int(quantity))
+        return Response("Production successful")
+    except ValueError as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["GET"])
+def stock_movements_list(request):
+        stock_movements = StockMovement.objects.all()
+        serializer = StockMovementSerializer(stock_movements, many=True)
+        return Response(serializer.data)

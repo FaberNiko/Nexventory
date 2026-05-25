@@ -6,9 +6,9 @@ urlpatterns = [
     path("products/", views.products_list),
     path("products/<int:pk>/", views.product_detail),
     path("components/", views.components_list),
-    path("components/<int:pk>/", views.component_detail)
-
-
+    path("components/<int:pk>/", views.component_detail),
+    path("products/<int:pk>/produce", views.product_produce),
+    path("stock-movements/", views.stock_movements_list)
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
