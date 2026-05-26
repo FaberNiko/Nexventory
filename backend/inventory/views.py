@@ -3,8 +3,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from inventory.models import Product, Component, StockMovement
-from inventory.serializers import ProductSerializer, ComponentSerializer, StockMovementSerializer
+from inventory.models import Product, Component, ProductComponent, StockMovement
+from inventory.serializers import ProductComponentSerializer, ProductSerializer, ComponentSerializer, StockMovementSerializer
 
 
 @api_view(["GET", "POST"])
@@ -87,7 +87,7 @@ def product_produce(request, pk):
     quantity = request.data["quantity"]
     try:    
         product.produce(int(quantity))
-        return Response("Production successful")
+        return Response({"message": "Production successful"})
     except ValueError as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -96,3 +96,37 @@ def stock_movements_list(request):
         stock_movements = StockMovement.objects.all()
         serializer = StockMovementSerializer(stock_movements, many=True)
         return Response(serializer.data)
+
+@api_view(["GET", "POST"])
+def product_component_list(request):
+    if request.method == "GET":    
+        product_components = ProductComponent.objects.all()
+        serializer = ProductComponentSerializer(product_components, many=True)
+        return Response(serializer.data)
+    elif request.method == "POST":
+        serializer = ProductComponentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["GET", "PUT", "DELETE"])
+def product_component_detail(request,pk):
+        try:
+            product_component = ProductComponent.objects.get(pk=pk)
+        except ProductComponent.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if request.method == "GET":
+            serializer = ProductComponentSerializer(product_component)
+            return Response(serializer.data)
+        elif request.method == "PUT":
+            serializer = ProductComponentSerializer(product_component, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        elif request.method == "DELETE":
+            product_component.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+

@@ -1,6 +1,7 @@
+from dataclasses import fields
 from rest_framework import serializers
 
-from inventory.models import Product, Component, StockMovement
+from inventory.models import Product, Component, ProductComponent, StockMovement
 
 class ProductSerializer(serializers.ModelSerializer):
     available_quantity = serializers.SerializerMethodField()
@@ -19,3 +20,8 @@ class StockMovementSerializer(serializers.ModelSerializer):
     class Meta:
         model = StockMovement
         fields = ['id', 'component', 'quantity', 'type', 'created_at']
+
+class ProductComponentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductComponent
+        fields = ['id', 'product', 'component', 'quantity']
