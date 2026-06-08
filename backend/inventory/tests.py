@@ -1,10 +1,13 @@
 from django.test import TestCase
 from django.db import IntegrityError
-
+from rest_framework.test import APIClient
 from .models import Component, Product, ProductComponent, StockMovement
 
 
 class ProductTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
     def test_product_without_components_returns_zero(self):
         product = Product.objects.create(name="But")
         self.assertEqual(product.get_available_quantity(), 0)
@@ -53,6 +56,22 @@ class ProductTest(TestCase):
          self.assertEqual(movement.type, 'production')
          self.assertEqual(movement.quantity, 3)
         
+    def test_get_all_products(self):
+        Product.objects.create(name="But")
+        response = self.client.get("/api/products/")
+
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["name"], "But")
+        
+    def test_post_new_product(self):
+        response = self.client.post("/api/products/", {"name": "Adidas"}, format="json")
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(Product.objects.count(), 1)
+        self.assertEqual(response.data["name"], "Adidas")   
+        self.assertEqual(Product.objects.first().name, "Adidas")
         
 
 
