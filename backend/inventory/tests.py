@@ -72,6 +72,9 @@ class ProductTest(TestCase):
         self.assertEqual(Product.objects.count(), 1)
         self.assertEqual(response.data["name"], "Adidas")   
         self.assertEqual(Product.objects.first().name, "Adidas")
+    
+    def test_produce_endpoint_decreases_stock(self):
+        response = self.client.post("/api/products/1/produce")
         
 
 
